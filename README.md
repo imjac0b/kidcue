@@ -41,4 +41,4 @@ The colours are Apple's real palette, decoded from the `CameraUI` binary (`backg
 Dot pitch of my recreation is approximate. The pairing of animation to colorway in `composited/` is my own,
 for demo purposes only, since the app picks a colorway per session.
 
-`composited/` has all 15 animations over backgrounds (`python3 background/compose_all.py` regenerates them).
+`composited/` has all 15 animations over backgrounds (`python3 background/render_all.py` regenerates them).
