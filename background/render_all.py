@@ -12,7 +12,7 @@ from make_background import make
 ROOT = Path(__file__).resolve().parent.parent
 PALETTE = json.loads((Path(__file__).parent / "colorways.json").read_text())
 # The app picks a colorway per session (log: "Picked session colorway"), not per animation.
-# This animation -> colorway pairing is only for the demo GIFs. balloons/blanket matches the
+# This animation -> colorway pairing is only for the demo videos. balloons/blanket matches the
 # asset-catalog menu image.
 ASSIGN = {
     "balloons": "blanket", "bonk": "pumpkin", "brushingteeth": "peppermint", "bubbles": "lucyblue",
@@ -24,7 +24,7 @@ COLORWAYS = {a: (PALETTE[c]["dot"], PALETTE[c]["bg"]) for a, c in ASSIGN.items()
 SIZE = 1024
 FG = lambda i: "[%d:v:0][%d:v:1]alphamerge,scale=%d:%d:flags=lanczos" % (i, i, SIZE, SIZE)   # colour track + alpha track
 OUT = {k: ROOT / k for k in ("transparent", "composited")}
-for k, fm in (("transparent", ("gif", "webp", "webm")), ("composited", ("gif", "webp", "mp4"))):
+for k, fm in (("transparent", ("webm",)), ("composited", ("mp4",))):
     for f in fm: (OUT[k] / f).mkdir(parents=True, exist_ok=True)
 
 def ff(*args):
@@ -36,14 +36,10 @@ def render(name):
     with tempfile.TemporaryDirectory() as tmp:
         bg = Path(tmp) / "bg.png"; make(SIZE, SIZE, dark, light).save(bg)
         t, c = OUT["transparent"], OUT["composited"]
-        # transparent
-        ff("-i", src, "-filter_complex", FG(0) + ",split[a][b];[a]palettegen=reserve_transparent=1[p];[b][p]paletteuse=alpha_threshold=128", "-loop", "0", str(t / "gif" / f"{name}.gif"))
-        ff("-i", src, "-filter_complex", FG(0), "-c:v", "libwebp_anim", "-quality", "80", "-loop", "0", str(t / "webp" / f"{name}.webp"))
+        # transparent (VP9 + alpha)
         ff("-i", src, "-filter_complex", FG(0) + ",format=yuva420p", "-c:v", "libvpx-vp9", "-crf", "30", "-b:v", "0", "-auto-alt-ref", "0", str(t / "webm" / f"{name}.webm"))
         # composited over the colorway background
         comp = f"{FG(1)}[fg];[0:v][fg]overlay=shortest=1"
-        ff("-loop", "1", "-i", str(bg), "-i", src, "-filter_complex", comp + ",split[a][b];[a]palettegen[p];[b][p]paletteuse", "-loop", "0", str(c / "gif" / f"{name}.gif"))
-        ff("-loop", "1", "-i", str(bg), "-i", src, "-filter_complex", comp, "-c:v", "libwebp_anim", "-quality", "80", "-loop", "0", str(c / "webp" / f"{name}.webp"))
         ff("-loop", "1", "-i", str(bg), "-i", src, "-filter_complex", comp + ",format=yuv420p", "-c:v", "libx264", "-crf", "20", "-preset", "slow", "-movflags", "+faststart", str(c / "mp4" / f"{name}.mp4"))
     return name
 

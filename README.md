@@ -8,8 +8,8 @@ Kid Cue (internal name *ShutterBuddy*) assets extracted from iPhone19,4 iOS 27.2
 
 - `raw_assets/` – the 15 Snoopy `.heics` animations and `shutterbuddy_bg_template.png` (from `Camera.app/ShutterBuddy_Assets`)
 - `source/CameraUI_Assets.car` – CameraUI asset catalog (contains `kidque_icon`)
-- `gifs/` – 512px transparent looping GIFs (12 fps), made with ffmpeg from the HEVC colour + alpha tracks
-- `composited/` – all 15 animations over a recreated background
+- `transparent/webm/` – the 15 animations at 1024px with transparency (VP9 + alpha; Safari support is unreliable)
+- `composited/mp4/` – the 15 animations at 1024px over a recreated colorway background (H.264)
 - `icon/`, `background/` – see below
 
 ## Background texture
@@ -38,7 +38,7 @@ The colours are Apple's real palette, decoded from the `CameraUI` binary (`backg
 | newspaper | `#E4E4E4` | `#B6B6B6` | | | | |
 
 `blanket` matches the `shutterbuddy_menu_content` image from the asset catalog. Swatches are in `background/swatches/`.
-Dot pitch of my recreation is approximate. The pairing of animation to colorway in `composited/` is my own,
+Dot pitch of my recreation is approximate. The pairing of animation to colorway in `composited/mp4/` is my own,
 for demo purposes only, since the app picks a colorway per session.
 
-`composited/` has all 15 animations over backgrounds (`python3 background/render_all.py` regenerates them).
+`composited/mp4/` has all 15 animations over backgrounds (`python3 background/render_all.py` regenerates them).
